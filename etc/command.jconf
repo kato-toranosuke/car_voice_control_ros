@@ -15,4 +15,7 @@
 # choose microphone input
 -input mic
 
+# start up as module mode
+-module
+
 ## EOF
