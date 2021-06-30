@@ -30,9 +30,33 @@ class JuliusReceiver:
                 return line
             line += v
 
+    def get_command(self, th):
+        line = self.get_line()
+
+        if "WHYPO" not in line:
+            return None
+
+        score_str = line.split('CM="')[-1].split('"')[0]
+        if float(score_str) < th:
+            return None
+
+        command = None
+        if "zenshin" in line:
+            command = 'f'
+        elif "koutai" in line:
+            command = 'b'
+        elif "usetsu" in line:
+            command = 'r'
+        elif "sasetsu" in line:
+            command = 'l'
+
+        return command
+
 
 if __name__ == '__main__':
     rospy.init_node("voice_to_command")
     julius = JuliusReceiver()
     while not rospy.is_shutdown():
-        print(julius.get_line())
+        com = julius.get_command(0.8)
+        if com != None:
+            print(com)
