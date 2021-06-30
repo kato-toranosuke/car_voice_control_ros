@@ -4,6 +4,7 @@
 import rospy
 import os
 import socket
+from std_msgs.msg import String
 
 
 class JuliusReceiver:
@@ -19,13 +20,12 @@ class JuliusReceiver:
 
         rospy.on_shutdown(self.sock.close)
 
-        print("JuliusReceiver is initialized.\n")
+        rospy.loginfo("JuliusReceiver is initialized.")
 
     def get_line(self):
         line = ""
         while not rospy.is_shutdown():
             v = self.sock.recv(1).decode(encoding='UTF-8', errors='ignore')
-            # print(v)
             if v == '\n':
                 return line
             line += v
@@ -55,8 +55,10 @@ class JuliusReceiver:
 
 if __name__ == '__main__':
     rospy.init_node("voice_to_command")
+    pub = rospy.Publisher('voice_command', String, queue_size=1)
     julius = JuliusReceiver()
     while not rospy.is_shutdown():
         com = julius.get_command(0.8)
         if com != None:
-            print(com)
+            pub.publish(com)
+            rospy.loginfo(com)
